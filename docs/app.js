@@ -43,8 +43,9 @@ function showEntry(error){
  loginVersion++;accessKey='';state=null;page='today';member='all';
  if($('#sheet').open)$('#sheet').close();
  $('.bottom').hidden=true;$('#switch-entry').hidden=true;document.body.classList.remove('member-view');$('.brand').textContent='常来看看';
- $('#app').innerHTML=`<section class="empty entry-panel"><h2>粘贴入口链接</h2><p>粘贴你的专属链接，进入后即可使用。</p><form id="entry-form"><label for="entry-link">专属入口链接</label><input id="entry-link" type="password" autocomplete="off" required placeholder="在这里粘贴入口链接"><p id="entry-error" role="alert">${esc(error||'')}</p><button class="primary" id="enter-button">进入</button></form></section>`;
+ $('#app').innerHTML=`<section class="empty entry-panel"><h2>粘贴入口链接</h2><p>专属链接就是登录凭证，无需另填密码。</p><form id="entry-form"><label for="entry-link">专属入口链接</label><input id="entry-link" type="password" autocomplete="off" required placeholder="在这里粘贴入口链接"><button type="button" class="textbtn" id="toggle-entry" aria-controls="entry-link" aria-pressed="false">显示链接</button><p id="entry-error" role="alert">${esc(error||'')}</p><button class="primary" id="enter-button">进入</button></form></section>`;
  $('#entry-link').value=pendingEntry;pendingEntry='';
+ $('#toggle-entry').onclick=()=>{const input=$('#entry-link'),visible=input.type==='password';input.type=visible?'text':'password';$('#toggle-entry').textContent=visible?'隐藏链接':'显示链接';$('#toggle-entry').setAttribute('aria-pressed',String(visible))};
  $('#entry-form').onsubmit=async e=>{
  e.preventDefault();const input=$('#entry-link').value.trim();let key='';try{const u=new URL(input);key=new URLSearchParams(u.hash.slice(1)).get('key')||''}catch{}
  if(!/^[a-f0-9]{64}$/.test(key)){$('#entry-error').textContent='请粘贴完整的专属入口链接';return}
