@@ -22,7 +22,7 @@ const adminEntry=location.pathname.endsWith('/admin.html');
 let accessKey='';
 function readEntry(){
  const incoming=new URLSearchParams(location.hash.slice(1)).get('key');
- if(incoming){accessKey=incoming;try{sessionStorage.setItem(adminEntry?'changlai-admin-key':'changlai-member-key',incoming)}catch{}history.replaceState(null,'',location.pathname+location.search)}
+ if(incoming){accessKey=incoming;history.replaceState(null,'',location.pathname+location.search)}
  else{try{accessKey=sessionStorage.getItem(adminEntry?'changlai-admin-key':'changlai-member-key')||''}catch{accessKey=''}}
 }
 readEntry();
@@ -49,7 +49,11 @@ function showEntry(error){
 }
 async function init(){
  if(!accessKey){showEntry();return}
- try{state=await api('state');if(adminEntry&&state.role!=='admin')throw Error('家人入口不能登录管理员页面');render()}
+ try{state=await api('state');const verifiedAdmin=state.role==='admin';
+ if(verifiedAdmin!==adminEntry){try{const oldSlot=adminEntry?'changlai-admin-key':'changlai-member-key';if(sessionStorage.getItem(oldSlot)===accessKey)sessionStorage.removeItem(oldSlot)}catch{}location.replace((verifiedAdmin?'./admin.html':'./')+'#key='+encodeURIComponent(accessKey));return}
+ try{sessionStorage.setItem(verifiedAdmin?'changlai-admin-key':'changlai-member-key',accessKey)}catch{}
+ render()}
+
  catch(e){showEntry(e.message)}
 }
 init();setInterval(()=>{if(!busy&&!$('#sheet').open&&!document.hidden)load().catch(()=>{})},15000);
