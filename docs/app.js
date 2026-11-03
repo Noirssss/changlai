@@ -48,7 +48,7 @@ function showEntry(error){
  $('#toggle-entry').onclick=()=>{const input=$('#entry-link'),visible=input.type==='password';input.type=visible?'text':'password';$('#toggle-entry').textContent=visible?'隐藏链接':'显示链接';$('#toggle-entry').setAttribute('aria-pressed',String(visible))};
  $('#entry-form').onsubmit=async e=>{
  e.preventDefault();const input=$('#entry-link').value.trim();let key='';try{const u=new URL(input);key=new URLSearchParams(u.hash.slice(1)).get('key')||''}catch{}
- if(!/^[a-f0-9]{64}$/.test(key)){$('#entry-error').textContent='请粘贴完整的专属入口链接';return}
+ if(!/^[a-zA-Z0-9_-]{3,128}$/.test(key)){$('#entry-error').textContent='请粘贴完整的专属入口链接';return}
  const attempt=++loginVersion;accessKey=key;$('#enter-button').disabled=true;$('#enter-button').textContent='正在验证…';$('#entry-error').textContent='';
  try{const verified=await api('state');if(attempt!==loginVersion)return;if(!['admin','member'].includes(verified.role))throw Error('入口无效，请重新粘贴');state=verified;render()}
  catch(error){if(attempt!==loginVersion)return;accessKey='';$('#entry-error').textContent=error.message;$('#enter-button').disabled=false;$('#enter-button').textContent='进入'}
